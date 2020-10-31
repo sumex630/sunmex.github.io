@@ -7,73 +7,165 @@ keywords: 测试代码高亮，
 # topmost: true
 ---
 
+```python
+#!/usr/bin/env python
+# coding: utf-8
+import numpy as np
+import matplotlib.pyplot as plt
+from sklearn.pipeline import Pipeline
+from sklearn.preprocessing import PolynomialFeatures
+from sklearn.linear_model import Ridge
 
-# 计网实验 -- PPP协议实验过程
 
-## 一、实验环境
+class MyLGMode(object):
+    """
+    自定义回归模型
+    """
+    def __init__(self, degree=1, alpha=0.0005):
+        self.degree = degree  # 阶数
+        self.alpha = alpha  # 正则化
+        self.theta_ = ""  # theta
+        # self.coef__ = ""  # 特征权重
+        # self.intercept__ = ""  # 偏值项
 
-- Cisco Packet Tracer
+    def fit(self, x, y):
+        """
+        使用最小二乘法求解(推导公式求解theta)
+        :param x:
+        :param y:
+        :return:
+        """
+        # 正则化项
+        identity_matrix = np.identity(self.degree+1)
+        reg_item = self.alpha * identity_matrix
 
-## 二、实验要求
+        x_b = np.ones((len(x), 1))  # 偏值项b的权重
+        for i in range(1, self.degree + 1):
+            x_b = np.c_[x ** i, x_b]  # 添加i次多项式
+        theta_best = np.linalg.inv(x_b.T.dot(x_b) + reg_item).dot(x_b.T).dot(y)
 
-- 将两个路由器使用PPP协议连接起来
+        self.theta_ = theta_best
 
-## 三、实验步骤
+    def predict(self, x_new):
+        """
+        预测结果
+        :param x:
+        :param degree:
+        :param alpha:
+        :return:
+        """
+        x_b = np.ones((len(x_new), 1))  # 偏值项b的权重
+        for i in range(1, self.degree + 1):
+            x_b = np.c_[x_new ** i, x_b]  # 添加i次多项式
+        y_predict = x_b.dot(self.theta_)
 
-### 第一步：连通路由器
+        return y_predict
 
-1. 放置两个路由器，将这两个路由器连接起来，使用 se2/0 端口。
-2. 修改路由器的配置。
-   - 路由名称
-   - 时钟速率 。如：128000
-   - IP地址 。如：192.168.12.1
-   - 接口状态 - 开
-   - 保存
-3. 模拟数据发送
-   - 打开仿真面板
-   - 在编辑过滤器中过滤ARP和ICMP协议
-   - 模拟发送
-   - 点开发送过来的数据包，可查看发送信息
+    def coef_(self):
+        """
+        特征权重
+        :return:
+        """
+        return self.theta_.reshape(-1)[:-1]
 
-### 第二步：配置路由器之间的ppp协议
+    def intercept_(self):
+        """
+        偏值项
+        :return:
+        """
+        return self.theta_.reshape(-1)[-1]
 
-1. 进入路由器(r1/r2)中 Serial2/0 的命令行界面
 
-2. `(config-if)#encapsulation ppp`   #  配置 ppp 协议
+def real_func(x):
+    """
+    目标函数
+    :param x:
+    :return:
+    """
+    return np.sin(2*np.pi*x) 
 
-3. `(config-if)#no shutdown`   # 确保ppp协议在此端口下不被关闭
 
-4.  `(config-if)#do show int se2/0`  # 查看该端口是否被激活以及该链路协议是否启动
+def plot_model(model_class, degree, alphas, **model_kargs):
+    """使用不同的 polynomial 值对某个线性数据进行训练的几种模型"""
+    for degree, style in zip(degree, ("y--", "g--", "b--")):
+        if model_class == "MyLGModel":
+            model = MyLGMode(degree, alphas)
+        else:
+            model = model_class(alphas, **model_kargs)
+            model = Pipeline([
+                # 对数据进行扩展
+                ("poly_features", PolynomialFeatures(degree=degree, include_bias=False)),
+                # 进行缩放
+                # ("std_scaler", StandardScaler()),
+                # 将岭回归模型用于结果特征
+                ("regul_mode", model)
+            ])
 
-   ![](/images/posts/network/image-20201025194648182.png)
+        model.fit(x, y)
+        y_predict_regul = model.predict(x_points)
 
-   > 注：只有将两个路由器都进行配置的情况下，才会显示 line protocol is up（链路协议已启动）。
+        plt.plot(x_points, y_predict_regul, style, label=r"degree={}".format(degree))
+        title_name = "My_mode" if model_class == "MyLGModel" else "Ridge"
+        plt.title(r"{}_alpha={}".format(title_name, alphas), fontsize=14)
 
-### 第三步：配置PPP认证
+        if alphas == 0.0005 and degree == 3 and model_class != "MyLGModel":
+            print("\n岭回归模型求解theta===== alpha={}, degree={}".format(alphas, degree))
+            print("coef_(特征权重): ", model[1].coef_.reshape(-1)[::-1])
+            print("intercept_(偏置项): ", model[1].intercept_)
+        elif alphas == 0.0005 and degree == 3 and model_class == "MyLGModel":
+            print("\n自定义模型求解theta===== alpha={}, degree={}".format(alphas, degree))
+            print("coef_(特征权重): ", model.coef_())
+            print("intercept_(偏置项): ", model.intercept_())
 
-1. 进入路由器(r1/r2)中 Serial2/0 的命令行界面
+    plot_curve(x, y, x_points)
 
-2.  `(config-if)#ppp ?` , `(config-if)#ppp authentication ? `  # 查看相关配置参数
 
-   ![](/images/posts/network/image-20201025201043569.png)
+def plot_curve(x_noise, y_noise, x_points):
+    """
+    绘制曲线
+    :param x_noise: 噪声点 x
+    :param y_noise: 噪声点 y
+    :param x_points: 数据点 x
+    :return:
+    """
+    plt.plot(x, y, "ro", label="noise")
+    plt.plot(x_points, real_func(x_points), "r-", label="real")
+    # plt.ylabel("y", fontsize=14)
+    plt.legend(loc="upper right")
+    # plt.show()
 
-   > 注：这里使用 PAP认证。
-   >
-   > 密码认证协议（PAP），是 PPP 协议集中的一种链路控制协议，主要是通过使用 2 次握手提供一种对等结点的建立认证的简单方法，这是建立在初始链路确定的基础上的。-- 来自百度
 
-3.  `(config-if)#ppp au pap`  # 当前状态若为 down，则开启协议
+if __name__ == '__main__':
+    np.random.seed(42)
+    # 构建数据集，这里用十个点
+    x = np.linspace(0, 1, 10).reshape(10, 1)
+    x_points = np.linspace(0, 1, 1000).reshape(1000, 1)
+    # 加上正态分布噪音的目标函数（Ground-Truth）的值
+    y_ = real_func(x)
+    y = [np.random.normal(0, 0.2) + y1 for y1 in y_]
 
-4. （`(config-if)#no shutdown`）
+    plt.figure(figsize=(12, 8))
+    # 绘制Ridge模型曲线--alphas=0
+    plt.subplot(221)
+    plot_model(Ridge, degree=(1, 3, 9), alphas=0, random_state=42)
+    plt.ylabel("$y$", fontsize=14)
+    # plt.xlabel("$x$", fontsize=14)
+    # 绘制Ridge模型曲线--alphas=0.001
+    plt.subplot(222)
+    plot_model(Ridge, degree=(1, 3, 9), alphas=0.0005, random_state=42)
+    # plt.xlabel("$x$", fontsize=14)
 
-5. `(config-if)#ppp pap sent-username r1 password 123456`  # 设置认证的用户名和密码
+    # 绘制自定义回归模型曲线
+    plt.subplot(223)
+    plot_model("MyLGModel", degree=(1, 3, 9), alphas=0)
+    plt.ylabel("$y$", fontsize=14)
+    plt.xlabel("$x$", fontsize=14)
+    plt.subplot(224)
+    plot_model("MyLGModel", degree=(1, 3, 9), alphas=0.0005)
+    plt.xlabel("$x$", fontsize=14)
+    plt.savefig("Ridge_MyModel.png")
+    plt.show()
 
-6. 退出当前配置环境，查看线路协议状态`#show int se2/0 `
 
-   > 注：此时的链路状态为down，因为两个路由器都需要进行认证，并且进行连接登录
 
-### 第四步：连接登录
-
-1. r1路由器： `(config)#username r2 password 123456`
-2. r2路由器： `(config)#username r1 password 123456`
-3. 退出配置环境，查看链路协议状态 `#show int se2/0`
-
+```
