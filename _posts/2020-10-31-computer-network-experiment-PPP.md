@@ -55,7 +55,7 @@ keywords: PPP协议，
 
 2.  `(config-if)#ppp ?` , `(config-if)#ppp authentication ? `  # 查看相关配置参数
 
-   ![image-20201025201043569](../../images/posts/network/image-20201025201043569.png)
+   ![](/images/posts/network/image-20201025201043569.png)
 
    > 注：这里使用 PAP认证。
    >
