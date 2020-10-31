@@ -4,10 +4,10 @@
 baseurl:
 url: https://sunmex.github.io
 date_format: "ordinal"
-title: 孟荀
-subtitle: "缺点东西..."
+title: 孟荀的博客
+subtitle: "此处应有一句精彩语录..."
 description: "孟荀的个人博客"
-keywords: 孟荀
+keywords: mex sun
 timezone: Asia/Shanghai
 encoding: "utf-8"
 side_bar_repo_limit: 5
