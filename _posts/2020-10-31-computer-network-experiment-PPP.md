@@ -45,7 +45,7 @@ keywords: PPP协议，
 
 4.  `(config-if)#do show int se2/0`  # 查看该端口是否被激活以及该链路协议是否启动
 
-   ![image-20201025194648182](../../images/posts/network/image-20201025194648182.png)
+   ![](/images/posts/network/image-20201025194648182.png)
 
    > 注：只有将两个路由器都进行配置的情况下，才会显示 line protocol is up（链路协议已启动）。
 
