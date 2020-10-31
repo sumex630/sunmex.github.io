@@ -45,7 +45,7 @@ keywords: PPP协议，
 
 4.  `(config-if)#do show int se2/0`  # 查看该端口是否被激活以及该链路协议是否启动
 
-   ![image-20201025194648182](../images\posts\network\image-20201025194648182.png)
+   ![image-20201025194648182](../images/posts/network/image-20201025194648182.png)
 
    > 注：只有将两个路由器都进行配置的情况下，才会显示 line protocol is up（链路协议已启动）。
 
@@ -55,7 +55,7 @@ keywords: PPP协议，
 
 2.  `(config-if)#ppp ?` , `(config-if)#ppp authentication ? `  # 查看相关配置参数
 
-   ![image-20201025201043569](../images\posts\network\image-20201025201043569.png)
+   ![image-20201025201043569](../images/posts/network/image-20201025201043569.png)
 
    > 注：这里使用 PAP认证。
    >
