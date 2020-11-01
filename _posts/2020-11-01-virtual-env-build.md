@@ -4,11 +4,9 @@ title: 虚拟环境配置(ubuntu & windows)和运行Jupyter Notebook
 categories: 开发环境
 description: 在ubuntu或windows下创建虚拟环境
 keywords: 虚拟环境，ubuntu，Windows，开发环境，Jupyter Notebook
-# topmost: true
 ---
 
 
-@[toc]
 # ubuntu下创建虚拟环境
 ## 1. 虚拟环境
 
@@ -84,7 +82,7 @@ mkvirtualenv -p /usr/bin/python3.6  py3.6  # 根据python具体路径而定
 ```python
 workon py3.6
 ```
-![在这里插入图片描述](https://img-blog.csdnimg.cn/20190429135815307.png)
+![在这里插入图片描述](https://img-blog.csdnimg.cn/20190429135815307.png)        
 **（4）查看已创建的虚拟环境**
 ```python
 workon + 回车   或   workon + 两次tab

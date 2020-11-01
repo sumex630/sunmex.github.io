@@ -13,7 +13,8 @@ keywords: Jupyter，主题
 > 第二种：由于Jupyter是一个网页，可自己根据需要设置css文件（C:\Users\xxx\.jupyter\custom\custom.css）。参考作者：[https://www.zhihu.com/question/40012144/answer/363009024](https://www.zhihu.com/question/40012144/answer/363009024)。
 
 >自己可根据需要修改或添加css代码
-![在这里插入图片描述](https://img-blog.csdnimg.cn/20200701173411975.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80Mzg2NjA2OA==,size_16,color_FFFFFF,t_70)
+![在这里插入图片描述](https://img-blog.csdnimg.cn/20200701173411975.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80Mzg2NjA2OA==,size_16,color_FFFFFF,t_70)  
+
 ```css
 /* Body */
 /*
